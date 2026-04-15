@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employees API</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+<h2>Employees API Testing</h2>
+
+
+<button id="getAll">Get All Employees</button>
+
+
+<input type="number" id="empId" placeholder="Enter ID" />
+<button id="getById">Get By ID</button>
+
+<h3>Add Employee</h3>
+<input id="fname" placeholder="First Name" />
+<input id="lname" placeholder="Last Name" />
+<input id="email" placeholder="Email" />
+<input id="dept" placeholder="Department" />
+<input id="salary" placeholder="Salary" />
+<button id="addEmp">Add</button>
+
+
+<h3>Delete Employee</h3>
+<input id="deleteId" placeholder="ID" />
+<button id="deleteEmp">Delete</button>
+
+<h3>Search</h3>
+<input id="searchName" placeholder="Name" />
+<input id="searchDept" placeholder="Department" />
+<input id="minSalary" placeholder="Min Salary" />
+<input id="maxSalary" placeholder="Max Salary" />
+<button id="searchBtn">Search</button>
+
+<!-- PAGINATION 
+<h3>Pagination</h3>
+<input id="page" placeholder="Page" />
+<input id="pageSize" placeholder="Page Size" />
+<button id="paginate">Get Page</button>
+-->
+<hr>
+
+<ul id="result"></ul>
+
+<script>
+
+const BASE_URL = "https://localhost:7189/api/employees";
+function getTokenHeader() {
+    return {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+    };
+}
+function login() {
+    $.ajax({
+        url: "https://localhost:7189/api/auth/login",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            username: "admin",
+            password: "123"
+        }),
+        success: function (res) {
+            localStorage.setItem("token", res.token);
+            alert("Login success 🔥");
+        }
+    });
+}
+// 🔐 OPTIONAL TOKEN (if using JWT)
+function getToken() {
+    return localStorage.getItem("token");
+}
+
+// COMMON FUNCTION
+function renderData(data) {
+    $("#result").empty();
+    $.each(data, function (i, emp) {
+        $("#result").append(
+            `<li>${emp.id} - ${emp.firstName} ${emp.lastName} - ${emp.department} - ${emp.salary}</li>`
+        );
+    });
+}
+
+//  GET ALL
+
+$("#getAll").click(function () {
+    $.ajax({
+    url: BASE_URL,
+    type: "GET",
+   headers: getTokenHeader(), // JWT token header
+    success: renderData,
+    error: () => alert("Unauthorized ")
+});
+});
+
+// GET BY ID
+
+$("#getById").click(function () {
+    let id = $("#empId").val();
+
+    $.ajax({
+        url: `${BASE_URL}/${id}`,
+        type: "GET",
+        headers: getTokenHeader(),
+        success: function (data) {
+            renderData([data]); // single ko array bana diya
+        },
+        error: () => alert("Employee not found")
+    });
+});
+
+// ADD EMPLOYEE (POST)
+$("#addEmp").click(function () {
+
+    let emp = {
+        firstName: $("#fname").val(),
+        lastName: $("#lname").val(),
+        email: $("#email").val(),
+        department: $("#dept").val(),
+        salary: parseFloat($("#salary").val())
+    };
+
+    $.ajax({
+        url: BASE_URL,
+        type: "POST",
+        headers: getTokenHeader(),
+        contentType: "application/json",
+        data: JSON.stringify(emp),
+        success: () => alert("Employee Added"),
+        error: () => alert("Error adding employee")
+    });
+});
+
+
+//  DELETE
+$("#deleteEmp").click(function () {
+
+    let id = $("#deleteId").val();
+
+    $.ajax({
+        url: `${BASE_URL}/${id}`,
+        type: "DELETE",
+        headers: getTokenHeader(),
+        success: () => alert("Deleted"),
+        error: () => alert("Error deleting")
+    });
+});
+
+// SEARCH
+$("#searchBtn").click(function () {
+
+    let name = $("#searchName").val();
+    let dept = $("#searchDept").val();
+    let min = $("#minSalary").val();
+    let max = $("#maxSalary").val();
+
+    $.ajax({
+        url: `${BASE_URL}/search?name=${name}&department=${dept}&minSalary=${min}&maxSalary=${max}`,
+        type: "GET",
+        headers: getTokenHeader(),
+        success: renderData,
+        error: () => alert("Search failed")
+    });
+});
+/*
+// =======================================
+// PAGINATION
+// =======================================
+$("#paginate").click(function () {
+
+    let page = $("#page").val();
+    let size = $("#pageSize").val();
+
+    $.ajax({
+        url: `${BASE_URL}?page=${page}&pageSize=${size}`,
+        type: "GET",
+        success: renderData,
+        error: () => alert("Pagination error")
+    });
+});
+*/
+</script>
+
+</body>
+</html>
