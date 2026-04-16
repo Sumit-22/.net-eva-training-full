@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Register</h2>
+
+    <input id="username" placeholder="Username" />
+    <input id="password" type="password" placeholder="Password" />
+
+    <button onclick="register()">Register</button>
+
+    <p id="msg"></p>
+</div>
+
+<script>
+function register() {
+    $.ajax({
+        url: "https://localhost:7189/api/auth/register",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            username: $("#username").val(),
+            password: $("#password").val()
+        }),
+        success: function () {
+            $("#msg").text("Registered successfully");
+        },
+        error: function(err) {
+            console.log(err.responseText);
+    alert(err.responseText);
+}
+    });
+}
+</script>
+
+</body>
+</html>

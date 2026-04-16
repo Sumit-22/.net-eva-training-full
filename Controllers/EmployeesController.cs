@@ -45,6 +45,7 @@ namespace MyFirstApi.Controllers
             return Ok("Employee added successfully");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public IActionResult DeleteEmployee(int id)
         {

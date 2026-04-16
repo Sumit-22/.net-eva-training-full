@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #eef2f7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Login</h2>
+
+    <input id="username" placeholder="Username" />
+    <input id="password" type="password" placeholder="Password" />
+
+    <button onclick="login()">Login</button>
+
+    <p id="msg"></p>
+</div>
+
+<script>
+
+function login() {
+    $.ajax({
+        url: "https://localhost:7189/api/auth/login",
+        type: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            username: $("#username").val(),
+            password: $("#password").val()
+        }),
+        success: function (res) {
+            localStorage.setItem("token", res.token);
+            $("#msg").text("Login success ✅");
+
+            // redirect to employees page
+            window.location.href = "employees.html";
+        },
+        error: function () {
+            $("#msg").text("Invalid credentials");
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>
